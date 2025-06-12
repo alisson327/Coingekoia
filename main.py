@@ -1,4 +1,4 @@
+from telegram_bot import enviar_sinal
 
-from telegram import enviar_alerta_telegram
-
-if name == "main": enviar_alerta_telegram("🚨 Teste de envio de sinal para o Telegram funcionando!")
+if __name__ == "__main__":
+    enviar_sinal("✅ Teste de mensagem enviada com sucesso!")
