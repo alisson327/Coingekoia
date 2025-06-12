@@ -1,8 +1,8 @@
 
 import requests
 
-TOKEN = "SEU_TOKEN_AQUI"
-CHAT_ID = "SEU_CHAT_ID_AQUI"
+TOKEN = "7769222423:AAEdsNAgBpk4lg9NTsuiT4qt_pY6FXIDiOE"
+CHAT_ID = "7841170326"
 
 def enviar_sinal(mensagem):
     try:
