@@ -9,16 +9,19 @@ def get_data_coingecko():
         "interval": "minutely"
     }
 
-    try:
+try:
     response = requests.get(url, params=params)
     data = response.json()
-    print(data)  # <---- Mantenha essa linha indentada dentro do try
+    print(data)  # <-- para debug
 
     # Extrair os últimos 15 candles
     prices = data["prices"][-15:]
     df = pd.DataFrame(prices, columns=["timestamp", "price"])
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
     return df
+except Exception as e:
+    print("⚠️ Erro ao buscar dados da CoinGecko:", e)
+    return pd.DataFrame()
 
     except Exception as e:
         print("⚠️ Erro ao buscar dados da CoinGecko:", e)
