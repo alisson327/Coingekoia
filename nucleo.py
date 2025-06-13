@@ -12,7 +12,8 @@ def get_data_coingecko():
     try:
         response = requests.get(url, params=params)
         data = response.json()
-
+        print(data)  # <---- ADICIONE ISSO TEMPORARIAMENTE
+prices = data["prices"][-15:]
         # Extrair os últimos 15 candles
         prices = data["prices"][-15:]
         df = pd.DataFrame(prices, columns=["timestamp", "price"])
