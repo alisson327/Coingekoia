@@ -8,12 +8,19 @@ params = {
     "days": "1"
 }
 
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        print(data)  # debug
+def get_data_coingecko():
+    url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+    params = {
+        "vs_currency": "usd",
+        "days": "1"
+    }
 
-        # Extrair os últimos 15 candles
+    try:
+        response = requests.get(url, 
+params=params)
+        data = response.json()
+        print(data)  # debug temporário
+
         prices = data["prices"][-15:]
         df = pd.DataFrame(prices, columns=["timestamp", "price"])
         df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
@@ -22,7 +29,6 @@ params = {
     except Exception as e:
         print("⚠️ Erro ao buscar dados da CoinGecko:", e)
         return pd.DataFrame()
-
 def gerar_sinal(df):
     if df.empty:
         return None
