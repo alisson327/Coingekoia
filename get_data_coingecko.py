@@ -6,8 +6,8 @@ def get_data_coingecko():
     url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
     params = {
     "vs_currency": "usd",
-    "days": "1"
-    # Remova o 'interval'
+    "days": "1",
+    "interval": "hourly"  
     }
     
 
