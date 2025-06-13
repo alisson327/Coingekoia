@@ -10,15 +10,15 @@ def get_data_coingecko():
     }
 
     try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        print(data)  # <---- ADICIONE ISSO TEMPORARIAMENTE
-prices = data["prices"][-15:]
-        # Extrair os últimos 15 candles
-        prices = data["prices"][-15:]
-        df = pd.DataFrame(prices, columns=["timestamp", "price"])
-        df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
-        return df
+    response = requests.get(url, params=params)
+    data = response.json()
+    print(data)  # <---- Mantenha essa linha indentada dentro do try
+
+    # Extrair os últimos 15 candles
+    prices = data["prices"][-15:]
+    df = pd.DataFrame(prices, columns=["timestamp", "price"])
+    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+    return df
 
     except Exception as e:
         print("⚠️ Erro ao buscar dados da CoinGecko:", e)
