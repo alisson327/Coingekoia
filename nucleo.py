@@ -23,7 +23,7 @@ except Exception as e:
     print("⚠️ Erro ao buscar dados da CoinGecko:", e)
     return pd.DataFrame()
 
-    except Exception as e:
+    except exception as e:
         print("⚠️ Erro ao buscar dados da CoinGecko:", e)
         return pd.DataFrame()
 
