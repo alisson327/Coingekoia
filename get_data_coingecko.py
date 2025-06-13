@@ -13,7 +13,7 @@ def get_data_coingecko():
 
     try:
         response = requests.get(url, params=params)
-        data = response.json()print(data)
+        data = response.json()print("🔍 DEBUG - Resposta da API:", data)
 
         # Extrair os últimos 100 candles (mais dados para cálculo de indicadores)
         prices = data["prices"][-100:]
