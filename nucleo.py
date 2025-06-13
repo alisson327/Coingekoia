@@ -23,9 +23,9 @@ except Exception as e:
     print("⚠️ Erro ao buscar dados da CoinGecko:", e)
     return pd.DataFrame()
 
-    except exception as e:
-        print("⚠️ Erro ao buscar dados da CoinGecko:", e)
-        return pd.DataFrame()
+    except Exception as e:
+    print("⚠️ Erro ao buscar dados da CoinGecko:", e)
+    return pd.DataFrame()
 
 def gerar_sinal(df):
     if df.empty:
