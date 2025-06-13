@@ -1,3 +1,6 @@
+import requests
+import pandas as pd
+
 def get_data_coingecko():
     url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
     params = {
@@ -19,3 +22,16 @@ def get_data_coingecko():
     except Exception as e:
         print("⚠️ Erro ao buscar dados da CoinGecko:", e)
         return pd.DataFrame()
+
+def gerar_sinal(df):
+    if df.empty:
+        return None
+
+    df["media"] = df["price"].rolling(window=5).mean()
+
+    if df["price"].iloc[-1] > df["media"].iloc[-1]:
+        return "🔼 Sinal de alta BTC (15m)"
+    elif df["price"].iloc[-1] < df["media"].iloc[-1]:
+        return "🔽 Sinal de baixa BTC (15m)"
+    else:
+        return None
