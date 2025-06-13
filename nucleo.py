@@ -9,23 +9,20 @@ def get_data_coingecko():
         "interval": "minutely"
     }
 
-try:
-    response = requests.get(url, params=params)
-    data = response.json()
-    print(data)  # <-- para debug
+    try:
+        response = requests.get(url, params=params)
+        data = response.json()
+        print(data)  # debug
 
-    # Extrair os últimos 15 candles
-    prices = data["prices"][-15:]
-    df = pd.DataFrame(prices, columns=["timestamp", "price"])
-    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
-    return df
-except Exception as e:
-    print("⚠️ Erro ao buscar dados da CoinGecko:", e)
-    return pd.DataFrame()
+        # Extrair os últimos 15 candles
+        prices = data["prices"][-15:]
+        df = pd.DataFrame(prices, columns=["timestamp", "price"])
+        df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+        return df
 
     except Exception as e:
-    print("⚠️ Erro ao buscar dados da CoinGecko:", e)
-    return pd.DataFrame()
+        print("⚠️ Erro ao buscar dados da CoinGecko:", e)
+        return pd.DataFrame()
 
 def gerar_sinal(df):
     if df.empty:
@@ -34,8 +31,8 @@ def gerar_sinal(df):
     df["media"] = df["price"].rolling(window=5).mean()
 
     if df["price"].iloc[-1] > df["media"].iloc[-1]:
-        return "🔼 Sinal de alta BTC (15m)"
+        return "📈 Sinal de alta BTC (15m)"
     elif df["price"].iloc[-1] < df["media"].iloc[-1]:
-        return "🔽 Sinal de baixa BTC (15m)"
+        return "📉 Sinal de baixa BTC (15m)"
     else:
         return None
