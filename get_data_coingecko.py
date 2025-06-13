@@ -5,10 +5,11 @@ import numpy as np
 def get_data_coingecko():
     url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
     params = {
-        "vs_currency": "usd",
-        "days": "1",
-        "interval": "minutely"
+    "vs_currency": "usd",
+    "days": "1"
+    # Remova o 'interval'
     }
+    
 
     try:
         response = requests.get(url, params=params)
