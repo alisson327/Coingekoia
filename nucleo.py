@@ -1,45 +1,35 @@
-import requests
-import pandas as pd
-from ta.momentum import RSIIndicator
-from ta.trend import MACD
+import yfinance as yf import pandas as pd from ta.momentum import RSIIndicator from ta.trend import MACD
 
-def get_data_coingecko():
-    url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
-    params = {
-        "vs_currency": "usd",
-        "days": "1",
-        "interval": "minutely"
-    }
+def get_data_yahoo(): try: # Obtem os dados do BTC em 1m via Yahoo Finance df = yf.download(tickers='BTC-USD', interval='1m', period='1d')
 
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        prices = data["prices"][-50:]  # 50 candles para RSI/MACD
-
-        df = pd.DataFrame(prices, columns=["timestamp", "price"])
-        df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
-        return df
-    except Exception as e:
-        print("⚠️ Erro ao buscar dados da CoinGecko:", e)
+if df.empty:
+        print("⚠️ Nenhum dado retornado do Yahoo Finance")
         return pd.DataFrame()
 
-def gerar_sinal(df):
-    if df.empty:
-        return None
+    df = df.rename(columns={"Close": "price"})
+    df = df.tail(50)  # Últimos 50 candles
+    return df
 
-    df["rsi"] = RSIIndicator(df["price"]).rsi()
-    macd = MACD(df["price"])
-    df["macd"] = macd.macd()
-    df["signal"] = macd.macd_signal()
+except Exception as e:
+    print("⚠️ Erro ao buscar dados do Yahoo Finance:", e)
+    return pd.DataFrame()
 
-    # Regras básicas de sinal
-    rsi = df["rsi"].iloc[-1]
-    macd_line = df["macd"].iloc[-1]
-    signal_line = df["signal"].iloc[-1]
+def gerar_sinal(df): if df.empty: return None
 
-    if rsi > 70 and macd_line < signal_line:
-        return "📉 Sinal de baixa BTC (15m)"
-    elif rsi < 30 and macd_line > signal_line:
-        return "📈 Sinal de alta BTC (15m)"
-    else:
-        return None
+df["rsi"] = RSIIndicator(df["price"]).rsi()
+macd = MACD(df["price"])
+df["macd"] = macd.macd()
+df["signal"] = macd.macd_signal()
+
+# Regras básicas de sinal
+rsi = df["rsi"].iloc[-1]
+macd_line = df["macd"].iloc[-1]
+signal_line = df["signal"].iloc[-1]
+
+if rsi > 70 and macd_line < signal_line:
+    return "📉 Sinal de baixa BTC (15m)"
+elif rsi < 30 and macd_line > signal_line:
+    return "📈 Sinal de alta BTC (15m)"
+else:
+    return None
+
