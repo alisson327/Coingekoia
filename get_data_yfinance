@@ -1,21 +1,21 @@
-import pandas as pd
-import numpy as np
+import yfinance as yf import pandas as pd import numpy as np
 
-def get_data_coingecko():
-    # Simula 100 candles com timestamps e preços
-    timestamps = pd.date_range(end=pd.Timestamp.now(), periods=100, freq="15min")
-    prices = np.linspace(67000, 66000, 100) + np.random.normal(0, 100, 100)
+def get_data_yfinance(ticker="BTC-USD"): try: # Baixar dados de 1 dia com intervalo de 15 minutos df = yf.download(ticker, period="1d", interval="15m")
 
-    df = pd.DataFrame({
-        "timestamp": timestamps,
-        "price": prices
-    })
-    df.set_index("timestamp", inplace=True)
+if df.empty:
+        print("⚠️ Nenhum dado retornado do Yahoo Finance.")
+        return pd.DataFrame()
 
-    # Simula os mesmos indicadores
+    # Renomear a coluna de fechamento
+    df = df.rename(columns={"Close": "price"})
+
+    # Indicadores
     df["returns"] = df["price"].pct_change()
+
+    # Média Móvel Simples de 14 períodos
     df["sma_14"] = df["price"].rolling(window=14).mean()
 
+    # RSI
     delta = df["price"].diff()
     gain = delta.where(delta > 0, 0)
     loss = -delta.where(delta < 0, 0)
@@ -24,11 +24,13 @@ def get_data_coingecko():
     rs = avg_gain / avg_loss
     df["rsi"] = 100 - (100 / (1 + rs))
 
+    # MACD
     ema_12 = df["price"].ewm(span=12, adjust=False).mean()
     ema_26 = df["price"].ewm(span=26, adjust=False).mean()
     df["macd"] = ema_12 - ema_26
     df["macd_signal"] = df["macd"].ewm(span=9, adjust=False).mean()
 
+    # Bollinger Bands (20 períodos, 2 desvios)
     sma_20 = df["price"].rolling(window=20).mean()
     std_20 = df["price"].rolling(window=20).std()
     df["boll_upper"] = sma_20 + (2 * std_20)
@@ -37,3 +39,8 @@ def get_data_coingecko():
 
     df.dropna(inplace=True)
     return df
+
+except Exception as e:
+    print(f"⚠️ Erro ao buscar dados do Yahoo Finance: {e}")
+    return pd.DataFrame()
+
