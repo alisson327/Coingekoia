@@ -1,7 +1,10 @@
 import yfinance as yf import pandas as pd import numpy as np
 
-def get_data_yfinance(ticker="BTC-USD"): try: # Baixar dados de 1 dia com intervalo de 15 minutos df = yf.download(ticker, period="1d", interval="15m")
-
+def get_data_yahoo():
+    try:
+        # Obtém os dados do BTC em 1m via Yahoo Finance
+        df = yf.download(tickers="BTC-USD", interval="1m", period="1d")
+        # ... continue o resto do código
 if df.empty:
         print("⚠️ Nenhum dado retornado do Yahoo Finance.")
         return pd.DataFrame()
