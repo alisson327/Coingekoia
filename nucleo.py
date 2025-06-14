@@ -1,6 +1,7 @@
-import yfinance as yf import pandas
-as pd from ta.momentum import 
-RSIIndicator import MACD
+import yfinance as yf
+import pandas as pd
+from ta.momentum import RSIIndicator
+from ta.trend import MACD
 def get_data_yahoo(): try: # Obtem os dados do BTC em 1m via Yahoo Finance df = yf.download(tickers='BTC-USD', interval='1m', period='1d')
 
 if df.empty:
