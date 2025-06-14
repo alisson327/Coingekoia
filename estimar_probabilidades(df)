@@ -1,0 +1,48 @@
+import numpy as np
+
+def estimar_probabilidades(df): """ Estima as probabilidades de acerto dos alvos TP1 a TP4 com base em critérios reais do mercado. """ try: ult = df.iloc[-1]
+
+# Exemplo de critérios básicos (versão inicial)
+    rsi = ult["rsi"]
+    macd = ult["macd"]
+    macd_signal = ult["macd_signal"]
+    distancia_boll = (ult["boll_upper"] - ult["boll_lower"]) / ult["price"]
+
+    # Base simples para decisão: quanto mais favorável, maior a chance
+    base_score = 50
+
+    if rsi < 30:
+        base_score += 10  # Sobrevendido
+    elif rsi > 70:
+        base_score -= 10  # Sobrecomprado
+
+    if macd > macd_signal:
+        base_score += 10
+    else:
+        base_score -= 5
+
+    if distancia_boll > 0.03:
+        base_score += 5
+
+    # Simula chance decrescente a cada alvo mais distante
+    tp1 = min(100, max(0, base_score + 20))
+    tp2 = min(100, max(0, base_score))
+    tp3 = min(100, max(0, base_score - 20))
+    tp4 = min(100, max(0, base_score - 40))
+
+    return {
+        "TP1": tp1,
+        "TP2": tp2,
+        "TP3": tp3,
+        "TP4": tp4
+    }
+
+except Exception as e:
+    print("Erro ao estimar probabilidades:", e)
+    return {
+        "TP1": 0,
+        "TP2": 0,
+        "TP3": 0,
+        "TP4": 0
+    }
+
