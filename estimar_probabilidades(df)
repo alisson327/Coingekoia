@@ -1,48 +1,53 @@
-import numpy as np
+import yfinance as yf import pandas as pd from ta.momentum import RSIIndicator from ta.trend import MACD
 
-def estimar_probabilidades(df): """ Estima as probabilidades de acerto dos alvos TP1 a TP4 com base em critérios reais do mercado. """ try: ult = df.iloc[-1]
+def get_data_yahoo(): try: df = yf.download(tickers='BTC-USD', interval='1m', period='1d') df.reset_index(inplace=True)
 
-# Exemplo de critérios básicos (versão inicial)
-    rsi = ult["rsi"]
-    macd = ult["macd"]
-    macd_signal = ult["macd_signal"]
-    distancia_boll = (ult["boll_upper"] - ult["boll_lower"]) / ult["price"]
-
-    # Base simples para decisão: quanto mais favorável, maior a chance
-    base_score = 50
-
-    if rsi < 30:
-        base_score += 10  # Sobrevendido
-    elif rsi > 70:
-        base_score -= 10  # Sobrecomprado
-
-    if macd > macd_signal:
-        base_score += 10
-    else:
-        base_score -= 5
-
-    if distancia_boll > 0.03:
-        base_score += 5
-
-    # Simula chance decrescente a cada alvo mais distante
-    tp1 = min(100, max(0, base_score + 20))
-    tp2 = min(100, max(0, base_score))
-    tp3 = min(100, max(0, base_score - 20))
-    tp4 = min(100, max(0, base_score - 40))
-
-    return {
-        "TP1": tp1,
-        "TP2": tp2,
-        "TP3": tp3,
-        "TP4": tp4
-    }
+df["timestamp"] = pd.to_datetime(df["Datetime"])
+    df["price"] = df["Close"]
+    df = df[["timestamp", "price"]]
+    return df
 
 except Exception as e:
-    print("Erro ao estimar probabilidades:", e)
-    return {
-        "TP1": 0,
-        "TP2": 0,
-        "TP3": 0,
-        "TP4": 0
-    }
+    print("⚠️ Erro ao buscar dados do Yahoo Finance:", e)
+    return pd.DataFrame()
+
+def calcular_probabilidades(entry, targets): distancias = [abs(target - entry) for target in targets] total_invertido = sum(1 / d if d != 0 else 0 for d in distancias)
+
+probabilidades = []
+for d in distancias:
+    peso = (1 / d if d != 0 else 0) / total_invertido
+    prob_percent = round(peso * 100)
+    probabilidades.append(prob_percent)
+
+return probabilidades
+
+def gerar_sinal(df): if df.empty: return None
+
+price_series = df["price"]
+df["rsi"] = RSIIndicator(close=price_series).rsi()
+macd = MACD(close=price_series)
+df["macd"] = macd.macd()
+df["signal"] = macd.macd_signal()
+
+rsi = df["rsi"].iloc[-1]
+macd_line = df["macd"].iloc[-1]
+signal_line = df["signal"].iloc[-1]
+entry = round(df["price"].iloc[-1], 4)
+
+if rsi > 70 and macd_line < signal_line:
+    direcao = "SHORT"
+    targets = [round(entry * 0.995, 4), round(entry * 0.99, 4), round(entry * 0.985, 4), round(entry * 0.98, 4)]
+    stop_loss = round(entry * 1.01, 4)
+elif rsi < 30 and macd_line > signal_line:
+    direcao = "LONG"
+    targets = [round(entry * 1.008, 4), round(entry * 1.015, 4), round(entry * 1.025, 4), round(entry * 1.035, 4)]
+    stop_loss = round(entry * 0.99, 4)
+else:
+    return None
+
+probabilidades = calcular_probabilidades(entry, targets)
+
+mensagem = f"""
+
+📈 BTC/USDT • {direcao} • Alav. 20x • Entrada: {entry} • TP1: {targets[0]} ({probabilidades[0]}%) / TP2: {targets[1]} ({probabilidades[1]}%) / TP3: {targets[2]} ({probabilidades[2]}%) / TP4: {targets[3]} ({probabilidades[3]}%) • SL: {stop_loss} • Stop móvel: Ativa após TP1 """ return mensagem.strip()
 
