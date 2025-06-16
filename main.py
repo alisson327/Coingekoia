@@ -7,8 +7,7 @@ if __name__ == "__main__":
         print("⚠️ Nenhum dado retornado")
     else:
         sinal = gerar_sinal(df)
-        if sinal:
-            # Informações fictícias por enquanto
+        if sinal is not None:
             entrada = df["price"].iloc[-1]
             tp1 = round(entrada * 1.002, 4)
             tp2 = round(entrada * 1.004, 4)
@@ -23,7 +22,9 @@ if __name__ == "__main__":
                 "tp4": 10
             }
 
-            mensagem = f"""📈 BTC/USDT • {'LONG' if 'alta' in sinal else 'SHORT'} • Alav. 20x
+            direcao = "LONG" if "alta" in sinal else "SHORT"
+
+            mensagem = f"""📈 BTC/USDT • {direcao} • Alav. 20x
 • Entrada: {entrada:.2f}
 • TP1: {tp1} ({porcentagens['tp1']}%) / TP2: {tp2} ({porcentagens['tp2']}%) / TP3: {tp3} ({porcentagens['tp3']}%) / TP4: {tp4} ({porcentagens['tp4']}%)
 • SL: {sl}
@@ -31,3 +32,5 @@ if __name__ == "__main__":
 """
 
             enviar_sinal(mensagem)
+        else:
+            print("Nenhum sinal gerado.")
