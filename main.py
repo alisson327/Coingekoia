@@ -7,7 +7,7 @@ if __name__ == "__main__":
         print("⚠️ Nenhum dado retornado")
     else:
         sinal = gerar_sinal(df)
-        if sinal:
+        if True:
             # Informações fictícias por enquanto
             entrada = df["price"].iloc[-1]
             tp1 = round(entrada * 1.002, 4)
