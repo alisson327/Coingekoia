@@ -4,16 +4,17 @@ from ta.momentum import RSIIndicator
 from ta.trend import MACD
 
 def get_data_yahoo():
-    try:df = yf.download(tickers='BTC-USD', interval='15m', period='1d')
-        df["timestamp"] = pd.to_datetime(df.index)  # CORRIGIDO
-        df["price"] = df["Close"]
-        df = df[["timestamp", "price"]]  # Mantém apenas as colunas necessárias
-        return df
-
-    except Exception as e:
-        print("⚠️ Erro ao buscar dados do Yahoo Finance:", e)
-        return pd.DataFrame()
-
+ try:
+    df = yf.download(tickers='BTC-USD', interval='15m', period='1d')
+    df.reset_index(inplace=True)
+    df["timestamp"] = pd.to_datetime(df["Datetime"])
+    df["price"] = df["Close"]
+    df = df[["timestamp", "price"]]
+    return df
+except Exception as e:
+    print("⚠️ Erro ao buscar dados do Yahoo Finance:", e)
+    return pd.DataFrame()
+        
 def gerar_sinal(df):
     if df.empty:
         return None
