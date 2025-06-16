@@ -4,8 +4,7 @@ from ta.momentum import RSIIndicator
 from ta.trend import MACD
 
 def get_data_yahoo():
-    try:
-        df = yf.download(tickers='BTC-USD', interval='1m', period='1d')
+    try:df = yf.download(tickers='BTC-USD', interval='15m', period='1d')
         df["timestamp"] = pd.to_datetime(df.index)  # CORRIGIDO
         df["price"] = df["Close"]
         df = df[["timestamp", "price"]]  # Mantém apenas as colunas necessárias
